@@ -220,21 +220,6 @@ class pix2pix():
         fig.savefig("./%d.png" % (epoch))
         plt.show()
 
-    def input_images(self, path):
-        img_A = []
-        pix=cv2.imread(path)
-        pix=pix[...,::-1]
-        pix=cv2.resize(pix,(256,256),interpolation=cv2.INTER_AREA)
-        img_A.append(pix)
-        img_A=np.array(img_A)/127.5-1
-        fake_A = self.generator.predict(img_A)
-
-        gen_imgs = fake_A
-        gen_imgs = 0.5 * gen_imgs + 0.5
-        gen_imgs=gen_imgs.astype(np.int8)
-
-        plt.imshow(gen_imgs)
-
     def input_img(self, path):
         img_A=[]
         img1=cv2.imread(path)
