@@ -1,4 +1,4 @@
-Fianl GUI Requirement
+Final GUI Requirement
 
 1. 能够导入256*256的png格式暗藏图片，运行完整代码运算后，输出256*256的模拟照片
 
