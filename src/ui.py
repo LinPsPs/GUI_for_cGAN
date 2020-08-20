@@ -1,52 +1,69 @@
-# author Haolin
+from tkinter import *
+from tkinter import ttk, colorchooser
 
-from tkinter import Tk as tk, Text, BOTH, W, N, E, S
-from tkinter.ttk import Frame, Button, Label, Style
-import enum
+class cGanUI:
+    def __init__(self, master):
+        self.master = master
+        self.color_fg = 'black'
+        self.color_bg = 'white'
+        self.old_x = None
+        self.old_y = None
+        self.penwidth = 5
+        self.drawWidgets()
+        self.c.bind('<B1-Motion>', self.paint)  # drwaing the line
+        self.c.bind('<ButtonRelease-1>', self.reset)
 
-# enum tools
-class Tool(enum.Enum):
-    LINE = 1
-    OVAL = 2
-    RECT = 3
-    
+    def paint(self, e):
+        if self.old_x and self.old_y:
+            self.c.create_line(self.old_x, self.old_y, e.x, e.y, width=self.penwidth, fill=self.color_fg,
+                               capstyle=ROUND, smooth=True)
 
-root = tk()
+        self.old_x = e.x
+        self.old_y = e.y
 
-root.title("cGAN")
+    def reset(self, e):  # reseting or cleaning the canvas
+        self.old_x = None
+        self.old_y = None
 
-frame = tk.Frame(root)
-frame.pack(fill=BOTH, expand=True)
+    def changeW(self, e):  # change Width of pen through slider
+        self.penwidth = e
 
-frame.grid_columnconfigure(1, weight=1)
-frame.grid_rowconfigure(3, weight=1)
+    def clear(self):
+        self.c.delete(ALL)
 
-canvas = tk.Canvas(root, bg="white", width=800, height=600)
-canvas.pack()
-canvas.grid(row=1, column=0, columnspan=2, rowspan=4, padx=5, sticky=E+W+S+N)
+    def change_fg(self):  # changing the pen color
+        self.color_fg = colorchooser.askcolor(color=self.color_fg)[1]
+
+    def change_bg(self):  # changing the background color canvas
+        self.color_bg = colorchooser.askcolor(color=self.color_bg)[1]
+        self.c['bg'] = self.color_bg
+
+    def drawWidgets(self):
+        self.controls = Frame(self.master, padx=5, pady=5)
+        Label(self.controls, text='Pen Width:', font=('arial 18')).grid(row=0, column=0)
+        self.slider = ttk.Scale(self.controls, from_=5, to=100, command=self.changeW, orient=VERTICAL)
+        self.slider.set(self.penwidth)
+        self.slider.grid(row=0, column=1, ipadx=30)
+        self.controls.pack(side=LEFT)
+
+        self.c = Canvas(self.master, width=500, height=400, bg=self.color_bg, )
+        self.c.pack(fill=BOTH, expand=True)
+
+        menu = Menu(self.master)
+        self.master.config(menu=menu)
+        filemenu = Menu(menu)
+        colormenu = Menu(menu)
+        menu.add_cascade(label='Colors', menu=colormenu)
+        colormenu.add_command(label='Brush Color', command=self.change_fg)
+        colormenu.add_command(label='Background Color', command=self.change_bg)
+        optionmenu = Menu(menu)
+        menu.add_cascade(label='Options', menu=optionmenu)
+        optionmenu.add_command(label='Clear Canvas', command=self.clear)
+        optionmenu.add_command(label='Exit', command=self.master.destroy)
 
 
-coords = {"x":0,"y":0,"x2":0,"y2":0}
-# keep a reference to all lines by keeping them in a list 
-lines = []
-
-def click(e):
-    # define start point for line
-    coords["x"] = e.x
-    coords["y"] = e.y
-
-    # create a line on this point and store it in the list
-    lines.append(canvas.create_line(coords["x"],coords["y"],coords["x"],coords["y"]))
-
-def drag(e):
-    # update the coordinates from the event
-    coords["x2"] = e.x
-    coords["y2"] = e.y
-
-    # Change the coordinates of the last created line to the new coordinates
-    canvas.coords(lines[-1], coords["x"],coords["y"],coords["x2"],coords["y2"])
-
-canvas.bind("<ButtonPress-1>", click)
-canvas.bind("<B1-Motion>", drag) 
-
-root.mainloop()
+if __name__ == '__main__':
+    root = Tk()
+    cGanUI(root)
+    root.title('Application')
+    root.mainloop()
