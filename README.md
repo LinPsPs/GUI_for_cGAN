@@ -15,3 +15,5 @@ Final GUI Requirement
 7. 观察代码运行现状，大概来个百分比进度条就好了，就用epochs的进度吧
 
 （暂时就想到这些）
+
+https://www.kaggle.com/ktaebum/anime-sketch-colorization-pair?
